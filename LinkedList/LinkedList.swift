@@ -20,25 +20,14 @@ class LinkedList<T> {
 		self.size = 0
 	}
 	
-	func getItem(at index: Index) -> Element {
-		precondition(index < size, "Getting an item out of bounds")
-		var cur: LinkedListValueNode!
-		var i = index
-		if index < size / 2 {
-			cur = head!
-			while i > 0 {
-				cur = cur.next!
-				i -= 1
-			}
-			return cur.value
-		}
-		i = size - index
-		cur = tail!
-		while i > 0 {
-			cur = cur.prev!
-			i -= 1
-		}
-		return cur.value
+	func getElement(at index: Index) -> Element {
+		precondition(inBounds(index), "Getting an element out of bounds")
+		return getListNode(at: index).value
+	}
+	
+	func getNode(at index: Index) -> LinkedListValueNode {
+		precondition(inBounds(index), "Getting a node out of bounds")
+		return getListNode(at: index)
 	}
 	
 	/// Adds an item to the end of the list
@@ -64,41 +53,66 @@ class LinkedList<T> {
 	func addFirst(_ item: T) -> LinkedListValueNode {
 		let node = LinkedListValueNode(linkedList: self, item)
 		if size == 0 {
-			head = node
-			tail = node
-			size += 1
+			addOnlyNode(node: node)
 		} else {
 			prependSingle(node: node, before: head!)
 		}
 		return node
 	}
 	
-	func remove(node: LinkedListValueNode) {
-		guard let
+	func removeElement(at index: Index) -> T {
+		precondition(inBounds(index), "Removing an element out of bounds")
+		return detachNode(getNode(at: index)).value
 	}
 	
-	private func detachNode(_ node: LinkedListValueNode) {
+	func removeNode(at index: Index) -> LinkedListValueNode {
+		precondition(inBounds(index), "Removing an node out of bounds")
+		return detachNode(getNode(at: index))
+	}
+	
+	func inBounds(_ index: Index) -> Bool {
+		return index >= 0 && index < size
+	}
+	
+	private func getListNode(at index: Index) -> LinkedListValueNode {
+		var cur: LinkedListValueNode!
+		var i = index
+		if index < size / 2 {
+			cur = head!
+			while i > 0 {
+				cur = cur.next!
+				i -= 1
+			}
+			return cur
+		}
+		i = size - index
+		cur = tail!
+		while i > 0 {
+			cur = cur.prev!
+			i -= 1
+		}
+		return cur
+	}
+	
+	@discardableResult
+	private func detachNode(_ node: LinkedListValueNode) -> LinkedListValueNode {
 		if let next = node._next {
 			next._prev = nil
 		}
 		if let prev = node._prev {
 			prev._next = nil
 		}
-		node.next = nil
-		node.prev = nil
+		node._next = nil
+		node._prev = nil
 		size -= 1
+		return node
 	}
 	
-	private func addNo(_ item: T) -> LinkedListValueNode {
-		let node = LinkedListValueNode(linkedList: self, item)
-		if size == 0 {
-			head = node
-			tail = node
-			size += 1
-		} else {
-			prependSingle(node: node, before: head!)
-		}
-		return node
+	/// Appends a single orphan node as the only node in list
+	private func addOnlyNode(node: LinkedListValueNode) {
+		head = node
+		tail = node
+		size += 1
 	}
 	
 	/// Appends a single orphan node, doesn't check for same LinkedListObj
@@ -202,7 +216,7 @@ extension LinkedList: Collection {
 	var endIndex: Index { return size }
 	
 	subscript(index: Index) -> Iterator.Element {
-		get { return getItem(at: index) }
+		get { return getElement(at: index) }
 	}
 	
 	func index(after i: Index) -> Index {
