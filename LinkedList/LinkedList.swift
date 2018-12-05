@@ -154,7 +154,7 @@ class LinkedList<T> {
 		var currentNode: LinkedListValueNode? = head!
 		var prevNode: LinkedListValueNode? = nil
 		while let curr = currentNode {
-			guard visitedNodes.contains(curr) else {
+			guard !visitedNodes.contains(curr) else {
 				return .Message("There is a loop involving \(curr)")
 			}
 			guard actualSize < size else {
@@ -167,8 +167,8 @@ class LinkedList<T> {
 				return .Message("Node \(curr) doesn't have a prev")
 			}
 			prevNode = prev
-			currentNode = curr._next
 			visitedNodes.insert(curr)
+			currentNode = curr._next
 			actualSize += 1
 		}
 		guard prevNode! == tail! else {
@@ -346,20 +346,21 @@ extension LinkedList {
 	
 	/// Detach the LinkedListValue at index.
 	@discardableResult private func _detachNode(_ node: LinkedListValueNode) -> LinkedListValueNode {
-		if node === head! {
+		if size == 1 {
+			head = nil
+			tail = nil
+		} else if node == head! {
 			head = node._next
-		}
-		if node === tail! {
+			node._next!._prev = nil
+		} else if node == tail! {
 			tail = node._prev
+			node._prev!._next = nil
+		} else {
+			node._next!._prev = node._prev!
+			node._prev!._next = node._next!
+			node._next = nil
+			node._prev = nil
 		}
-		if let next = node._next {
-			next._prev = node._prev
-		}
-		if let prev = node._prev {
-			prev._next = node._next
-		}
-		node._next = nil
-		node._prev = nil
 		size -= 1
 		return node
 	}

@@ -65,18 +65,23 @@ class LinkedListTest: XCTestCase {
 		XCTAssertEqual(linkedList[1].i, 1)
 		XCTAssertEqual(linkedList[2].i, 3)
 		XCTAssertEqual(linkedList[3].i, 2)
+		print(linkedList.checkLinkedList())
 	}
 	
 	func testSegmentation2() {
 		let linkedList = LinkedList<O>()
 		linkedList.addFirst(O(3))
+		print(linkedList.checkLinkedList())
 		linkedList.addFirst(O(2))
 		linkedList.addFirst(O(1))
 		linkedList.addFirst(O(0))
 		XCTAssertEqual(linkedList.size, 4)
+		print(linkedList.checkLinkedList())
 		let head = linkedList.popHeadNode()!
+		print(linkedList.checkLinkedList())
 		let tail = linkedList.popTailNode()!
 		XCTAssertEqual(linkedList.size, 2)
+		print(linkedList.checkLinkedList())
 		XCTAssertEqual(tail, linkedList.insert(node: tail, at: 0))
 		print(linkedList.checkLinkedList())
 		XCTAssertEqual(linkedList.size, 3)
