@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		F21CB3A421B66BDC00036785 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21CB3A321B66BDC00036785 /* main.swift */; };
 		F21CB3AB21B66BE500036785 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21CB3AA21B66BE500036785 /* LinkedList.swift */; };
+		F21CB3B321B74CA700036785 /* LinkedListTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21CB3B221B74CA700036785 /* LinkedListTest.swift */; };
+		F21CB3B821B74D1700036785 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21CB3AA21B66BE500036785 /* LinkedList.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,10 +29,20 @@
 		F21CB3A021B66BDC00036785 /* LinkedList */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LinkedList; sourceTree = BUILT_PRODUCTS_DIR; };
 		F21CB3A321B66BDC00036785 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		F21CB3AA21B66BE500036785 /* LinkedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
+		F21CB3B021B74CA700036785 /* LinkedListTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LinkedListTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F21CB3B221B74CA700036785 /* LinkedListTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedListTest.swift; sourceTree = "<group>"; };
+		F21CB3B421B74CA700036785 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		F21CB39D21B66BDC00036785 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F21CB3AD21B74CA700036785 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -44,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				F21CB3A221B66BDC00036785 /* LinkedList */,
+				F21CB3B121B74CA700036785 /* LinkedListTest */,
 				F21CB3A121B66BDC00036785 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -52,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				F21CB3A021B66BDC00036785 /* LinkedList */,
+				F21CB3B021B74CA700036785 /* LinkedListTest.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -63,6 +77,15 @@
 				F21CB3AA21B66BE500036785 /* LinkedList.swift */,
 			);
 			path = LinkedList;
+			sourceTree = "<group>";
+		};
+		F21CB3B121B74CA700036785 /* LinkedListTest */ = {
+			isa = PBXGroup;
+			children = (
+				F21CB3B221B74CA700036785 /* LinkedListTest.swift */,
+				F21CB3B421B74CA700036785 /* Info.plist */,
+			);
+			path = LinkedListTest;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -85,6 +108,23 @@
 			productReference = F21CB3A021B66BDC00036785 /* LinkedList */;
 			productType = "com.apple.product-type.tool";
 		};
+		F21CB3AF21B74CA700036785 /* LinkedListTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F21CB3B721B74CA700036785 /* Build configuration list for PBXNativeTarget "LinkedListTest" */;
+			buildPhases = (
+				F21CB3AC21B74CA700036785 /* Sources */,
+				F21CB3AD21B74CA700036785 /* Frameworks */,
+				F21CB3AE21B74CA700036785 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LinkedListTest;
+			productName = LinkedListTest;
+			productReference = F21CB3B021B74CA700036785 /* LinkedListTest.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -96,6 +136,9 @@
 				ORGANIZATIONNAME = "Aoil Applications";
 				TargetAttributes = {
 					F21CB39F21B66BDC00036785 = {
+						CreatedOnToolsVersion = 10.0;
+					};
+					F21CB3AF21B74CA700036785 = {
 						CreatedOnToolsVersion = 10.0;
 					};
 				};
@@ -113,9 +156,20 @@
 			projectRoot = "";
 			targets = (
 				F21CB39F21B66BDC00036785 /* LinkedList */,
+				F21CB3AF21B74CA700036785 /* LinkedListTest */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F21CB3AE21B74CA700036785 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F21CB39C21B66BDC00036785 /* Sources */ = {
@@ -124,6 +178,15 @@
 			files = (
 				F21CB3AB21B66BE500036785 /* LinkedList.swift in Sources */,
 				F21CB3A421B66BDC00036785 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F21CB3AC21B74CA700036785 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F21CB3B821B74D1700036785 /* LinkedList.swift in Sources */,
+				F21CB3B321B74CA700036785 /* LinkedListTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,6 +328,42 @@
 			};
 			name = Release;
 		};
+		F21CB3B521B74CA700036785 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 7F7BS4L457;
+				INFOPLIST_FILE = LinkedListTest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = aoil.app.flatland2.LinkedListTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+			};
+			name = Debug;
+		};
+		F21CB3B621B74CA700036785 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 7F7BS4L457;
+				INFOPLIST_FILE = LinkedListTest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = aoil.app.flatland2.LinkedListTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -282,6 +381,15 @@
 			buildConfigurations = (
 				F21CB3A821B66BDC00036785 /* Debug */,
 				F21CB3A921B66BDC00036785 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F21CB3B721B74CA700036785 /* Build configuration list for PBXNativeTarget "LinkedListTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F21CB3B521B74CA700036785 /* Debug */,
+				F21CB3B621B74CA700036785 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

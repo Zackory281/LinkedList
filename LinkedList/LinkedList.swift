@@ -20,28 +20,44 @@ class LinkedList<T> {
 		self.size = 0
 	}
 	
-	func getElement(at index: Index) -> Element {
-		precondition(inBounds(index), "Getting an element out of bounds")
-		return getListNode(at: index).value
+	/**
+	Gets the Element at the index if it exists.
+	- parameters:
+		- index: the index of the LinkedListValueNode
+	- returns: the LinkedListValueNode at index
+	*/
+	func getElement(at index: Index) -> Element? {
+		guard inBounds(index) else { return nil }
+		return _getListNode(at: index).value
 	}
 	
-	func getNode(at index: Index) -> LinkedListValueNode {
-		precondition(inBounds(index), "Getting a node out of bounds")
-		return getListNode(at: index)
+	/**
+	Gets the LinkedListValueNode at the index if it exists.
+	- parameters:
+		- index: the index of the LinkedListValueNode
+	- returns: the LinkedListValueNode at index
+	*/
+	func getNode(at index: Index) -> LinkedListValueNode? {
+		guard inBounds(index) else { return nil }
+		return _getListNode(at: index)
+	}
+	
+	func insert(node: LinkedListValueNode, at index: Index) -> LinkedListValueNode? {
+		guard isOrphan(node) && (inBounds(index) || index == size)else { return nil }
+		_insert(node: node, at: index)
+		return node
 	}
 	
 	/// Adds an item to the end of the list
 	/// - parameters:
 	/// 	- item: the value to add
 	/// - returns: the LinkedListValueNode inserted
-	func append(_ item: T) -> LinkedListValueNode {
-		let node = LinkedListValueNode(linkedList: self, item)
+	@discardableResult func append(_ item: T) -> LinkedListValueNode {
+		let node = LinkedListValueNode(item)
 		if size == 0 {
-			head = node
-			tail = node
-			size += 1
+			_addOnlyNode(node: node)
 		} else {
-			appendSingle(node: node, after: tail!)
+			_appendSingle(node: node, after: tail!)
 		}
 		return node
 	}
@@ -50,123 +66,115 @@ class LinkedList<T> {
 	/// - parameters:
 	/// 	- item: the value to add
 	/// - returns: the LinkedListValueNode inserted
-	func addFirst(_ item: T) -> LinkedListValueNode {
-		let node = LinkedListValueNode(linkedList: self, item)
+	@discardableResult func addFirst(_ item: T) -> LinkedListValueNode {
+		let node = LinkedListValueNode(item)
 		if size == 0 {
-			addOnlyNode(node: node)
+			_addOnlyNode(node: node)
 		} else {
-			prependSingle(node: node, before: head!)
+			_prependSingle(node: node, before: head!)
 		}
 		return node
 	}
 	
-	func removeElement(at index: Index) -> T {
-		precondition(inBounds(index), "Removing an element out of bounds")
-		return detachNode(getNode(at: index)).value
+	/**
+	Pop off the head of the list.
+	- returns: The linkedListValueNode, head, an optional.
+	*/
+	func popHeadNode() -> LinkedListValueNode? {
+		guard let head = head else { return nil }
+		return _detachNode(head)
 	}
 	
-	func removeNode(at index: Index) -> LinkedListValueNode {
+	/**
+	Pop off the tail of the list.
+	- returns: The linkedListValueNode, tail, an optional.
+	*/
+	func popTailNode() -> LinkedListValueNode? {
+		guard let tail = tail else { return nil }
+		return _detachNode(tail)
+	}
+	
+	/**
+	Pop off the first item in the list with the node.
+	- returns: The Element, at the head, an optional.
+	*/
+	func popFirst() -> T? {
+		return popHeadNode()?.value
+	}
+	
+	/**
+	Pop off the last item in the list with the node.
+	- returns: The Element, at the tail, an optional.
+	*/
+	func popLast() -> T? {
+		return popTailNode()?.value
+	}
+	
+	@discardableResult func removeElement(at index: Index) -> T {
+		precondition(inBounds(index), "Removing an element out of bounds")
+		return _detachNode(getNode(at: index)!).value
+	}
+	
+	@discardableResult func removeNode(at index: Index) -> LinkedListValueNode {
 		precondition(inBounds(index), "Removing an node out of bounds")
-		return detachNode(getNode(at: index))
+		return _detachNode(getNode(at: index)!)
 	}
 	
 	func inBounds(_ index: Index) -> Bool {
 		return index >= 0 && index < size
 	}
 	
-	private func getListNode(at index: Index) -> LinkedListValueNode {
-		var cur: LinkedListValueNode!
-		var i = index
-		if index < size / 2 {
-			cur = head!
-			while i > 0 {
-				cur = cur.next!
-				i -= 1
+	func isOrphan(_ node: LinkedListValueNode) -> Bool {
+		return node._next == nil && node._prev == nil
+	}
+	
+	func setNodeBefore(node: LinkedListValueNode, before: LinkedListValueNode) {
+		_prependSingle(node: node, before: before)
+	}
+	
+	func setNodeAfter(node: LinkedListValueNode, after: LinkedListValueNode) {
+		_appendSingle(node: node, after: after)
+	}
+	
+	func checkLinkedList() -> LinkedListError? {
+		if size == 0 {
+			return (head == nil && tail == nil) ? nil : LinkedListError.Message("Size said zero but not.")
+		}
+		if head == nil {
+			return LinkedListError.Message("Non empty list with nil head")
+		}
+		if tail == nil {
+			return LinkedListError.Message("Non empty list with nil tail")
+		}
+		if size == 1 && tail! != head! {
+			return LinkedListError.Message("Size one list with non-matching head and tail.")
+		}
+		var visitedNodes = Set<LinkedListValueNode>()
+		var actualSize = 0
+		var currentNode: LinkedListValueNode? = head!
+		var prevNode: LinkedListValueNode? = nil
+		while let curr = currentNode {
+			guard visitedNodes.contains(curr) else {
+				return .Message("There is a loop involving \(curr)")
 			}
-			return cur
+			guard actualSize < size else {
+				return .Message("Actual size exceeds \(size)")
+			}
+			guard curr._prev == prevNode else {
+				return .Message("Node \(curr)'s prev doesn't match it's prev's next.")
+			}
+			guard let prev = curr.prev else {
+				return .Message("Node \(curr) doesn't have a prev")
+			}
+			prevNode = prev
+			currentNode = curr._next
+			visitedNodes.insert(curr)
+			actualSize += 1
 		}
-		i = size - index
-		cur = tail!
-		while i > 0 {
-			cur = cur.prev!
-			i -= 1
+		guard prevNode! == tail! else {
+			return .Message("End node of the list: \(prevNode!) doesn't correspond to the tail")
 		}
-		return cur
-	}
-	
-	@discardableResult
-	private func detachNode(_ node: LinkedListValueNode) -> LinkedListValueNode {
-		if let next = node._next {
-			next._prev = nil
-		}
-		if let prev = node._prev {
-			prev._next = nil
-		}
-		node._next = nil
-		node._prev = nil
-		size -= 1
-		return node
-	}
-	
-	/// Appends a single orphan node as the only node in list
-	private func addOnlyNode(node: LinkedListValueNode) {
-		head = node
-		tail = node
-		size += 1
-	}
-	
-	/// Appends a single orphan node, doesn't check for same LinkedListObj
-	private func appendSingle(node: LinkedListValueNode, after: LinkedListValueNode) {
-		node._prev = after
-		after._next = node
-		if let preNext = after._next {
-			node._next = preNext
-			preNext._prev = node
-		} else {
-			tail = node
-		}
-		size += 1
-	}
-	
-	/// Appends a single orphan node, doesn't check for same LinkedListObj
-	private func prependSingle(node: LinkedListValueNode, before: LinkedListValueNode) {
-		node._next = before
-		before._prev = node
-		if let prePrev = before._prev {
-			node._prev = prePrev
-			prePrev._next = node
-		} else {
-			head = node
-		}
-		size += 1
-	}
-	
-	@discardableResult
-	func setNext(of node: LinkedListValueNode, to targetNode: LinkedListValueNode?) -> Bool {
-		guard node.linkedList === self else {
-			print("SetNext node of same parent.")
-			return false
-		}
-		guard let targetNode = targetNode, targetNode.linkedList === self else {
-			print("SetNext target of same parent.")
-			return false
-		}
-		print("SetNext dont work")
-		return false
-	}
-	
-	@discardableResult
-	func setPrev(of node: LinkedListValueNode, to targetNode: LinkedListValueNode?) -> Bool {
-		guard node.linkedList === self else {
-			print("setPrev node of same parent.")
-			return false
-		}
-		guard let targetNode = targetNode, targetNode.linkedList === self else {
-			print("setPrev target of same parent.")
-			return false
-		}
-		print("setPrev dont work")
-		return false
+		return nil
 	}
 	
 	class LinkedListHeadNode {
@@ -184,16 +192,13 @@ class LinkedList<T> {
 		var prev: LinkedListValueNode? {get{return _prev}}
 		var next: LinkedListValueNode? {get{return _next}}
 		var value: T
-		unowned let linkedList: LinkedList<T>
 		
-		init(linkedList: LinkedList<T>, _ value: T, prev: LinkedListValueNode, next: LinkedListValueNode? = nil) {
+		init(_ value: T, prev: LinkedListValueNode, next: LinkedListValueNode? = nil) {
 			self.value = value
-			self.linkedList = linkedList
 			super.init(next, prev)
 		}
-		init(linkedList: LinkedList<T>, _ value: T) {
+		init(_ value: T) {
 			self.value = value
-			self.linkedList = linkedList
 			super.init()
 		}
 		
@@ -216,7 +221,14 @@ extension LinkedList: Collection {
 	var endIndex: Index { return size }
 	
 	subscript(index: Index) -> Iterator.Element {
-		get { return getElement(at: index) }
+		get {
+			precondition(inBounds(index))
+			return getElement(at: index)!
+		}
+		set {
+			precondition(inBounds(index))
+			_insert(node: LinkedListValueNode(newValue), at: index)
+		}
 	}
 	
 	func index(after i: Index) -> Index {
@@ -245,6 +257,157 @@ extension LinkedList: Collection {
 	}
 }
 
+extension LinkedList {
+	
+	class LinkedListNodeIterator: IteratorProtocol {
+		
+		weak var currentNode: LinkedListValueNode?
+		
+		init(start: LinkedListValueNode?) {
+			currentNode = start
+		}
+		
+		func next() -> T? {
+			guard let cnode = currentNode?.value else { return nil }
+			currentNode = currentNode!._next
+			return cnode
+		}
+	}
+}
+
+// Subscript extension
+extension LinkedList {
+	
+	subscript(index: Index) -> LinkedListValueNode {
+		get {
+			precondition(inBounds(index))
+			return _getListNode(at: index)
+		}
+		set {
+			precondition(isOrphan(newValue))
+			precondition(inBounds(index))
+			_replaceNode(node: _getListNode(at: index), with: newValue)
+		}
+	}
+	
+	subscript(safe index: Index) -> Iterator.Element? {
+		get {
+			return getElement(at: index)
+		}
+	}
+}
+
 enum LinkedListError: Error {
 	case IndexOutOfBounds(i: Int)
+	case SizeInaccurate
+	case Looped
+	case Message(String)
+}
+
+// Private utility functions
+extension LinkedList {
+	/// Replaces a node with its replacement. Assumes node is an orphan.
+	private func _replaceNode(node: LinkedListValueNode, with replacement: LinkedListValueNode) {
+		if head == node {
+			head = replacement
+		} else if let prev = node._prev {
+			prev._next = replacement
+			replacement._prev = node
+		}
+		if tail == node {
+			tail = replacement
+		} else if let next = node._next {
+			next._prev = replacement
+			replacement._next = node
+		}
+	}
+	
+	/// Get the LinkedListValue at index.
+	/// Assumes index in bound
+	private func _getListNode(at index: Index) -> LinkedListValueNode {
+		var cur: LinkedListValueNode!
+		var i = index
+		if index < size / 2 {
+			cur = head!
+			while i > 0 {
+				cur = cur.next!
+				i -= 1
+			}
+			return cur
+		}
+		i = size - index - 1
+		cur = tail!
+		while i > 0 {
+			cur = cur.prev!
+			i -= 1
+		}
+		return cur
+	}
+	
+	/// Detach the LinkedListValue at index.
+	@discardableResult private func _detachNode(_ node: LinkedListValueNode) -> LinkedListValueNode {
+		if node === head! {
+			head = node._next
+		}
+		if node === tail! {
+			tail = node._prev
+		}
+		if let next = node._next {
+			next._prev = node._prev
+		}
+		if let prev = node._prev {
+			prev._next = node._next
+		}
+		node._next = nil
+		node._prev = nil
+		size -= 1
+		return node
+	}
+	
+	/// Appends a single orphan node as the only node in list.
+	/// This Set the LinkedList to have only this node.
+	private func _addOnlyNode(node: LinkedListValueNode) {
+		head = node
+		tail = node
+		size += 1
+	}
+	
+	/// Appends a single orphan node at beginning of the index.
+	/// important:
+	/// * node is an orphan since we may or may not strip it
+	func _insert(node: LinkedListValueNode, at index: Index) {
+		if size == 0 {
+			_addOnlyNode(node: node)
+		}
+		if index == 0 {
+			_prependSingle(node: node, before: head!)
+		}
+		_appendSingle(node: node, after: _getListNode(at: index))
+	}
+	
+	/// Appends a single orphan node, doesn't check for same LinkedList<T>
+	private func _appendSingle(node: LinkedListValueNode, after: LinkedListValueNode) {
+		node._prev = after
+		if let preNext = after._next {
+			node._next = preNext
+			preNext._prev = node
+		} else {
+			tail = node
+		}
+		after._next = node
+		size += 1
+	}
+	
+	/// Appends a single orphan node, doesn't check for same LinkedList<T>
+	private func _prependSingle(node: LinkedListValueNode, before: LinkedListValueNode) {
+		node._next = before
+		if let prePrev = before._prev {
+			node._prev = prePrev
+			prePrev._next = node
+		} else {
+			head = node
+		}
+		before._prev = node
+		size += 1
+	}
 }
